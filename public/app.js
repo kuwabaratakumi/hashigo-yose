@@ -84,8 +84,7 @@ async function render() {
   document.querySelectorAll('.view button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
   $('#hashigo').hidden = state.view !== 'hashigo';
   $('.search').hidden = state.view === 'hashigo';
-  $('#days').hidden = state.view === 'geinin';
-  $('#q').placeholder = state.view === 'geinin' ? '芸人さんの名前（例: 一之輔、白酒、たま）' : '芸人さんの名前で絞り込む（例: 喬太郎）';
+  $('#q').placeholder = '芸人さんの名前で絞り込む（例: 喬太郎）';
   if (state.view === 'hashigo') return renderHashigo();
   if (state.view === 'geinin') return renderGeinin();
   return renderBangumi();
@@ -149,38 +148,52 @@ function fillNames(schedules, dates) {
   if ($('#nameList').dataset.html !== html) { $('#nameList').innerHTML = html; $('#nameList').dataset.html = html; }
 }
 
-/* ---------- 芸人さがし：10日間・すべての寄席から ---------- */
+/* ---------- 芸人さがし：選んだ日の、選んだ寄席の出演者一覧 ---------- */
 async function renderGeinin() {
   const main = $('#main');
+  if (!state.selected.length) { renderSeq++; main.replaceChildren($('#tplEmpty').content.cloneNode(true)); return; }
   const seq = ++renderSeq;
-  const ids = state.index.venues.map((v) => v.id);
+  const ids = state.selected.filter((id) => venueOf(id));
   if (ids.some((id) => !state.cache.has(id))) main.innerHTML = hint('番組を読み込んでいます…');
   const schedules = await Promise.all(ids.map(loadSchedule));
   if (seq !== renderSeq) return;
-  const today = jstNow().iso;
-  const days = state.index.days.filter((d) => d >= today);
-  fillNames(schedules, days);
+  fillNames(schedules, [state.date]);
   const q = norm(state.q);
-  if (!q) { main.innerHTML = hint('芸人さんの名前を入れると、これから10日間にどの寄席の何時ごろに出るかを一覧にします（池袋演芸場は番組が画像のため対象外です）。'); return; }
-  const rows = [];
-  schedules.forEach((sc, i) => {
-    const v = venueOf(ids[i]);
-    for (const d of days) for (const p of sc?.days?.[d] || []) for (const a of p.acts || []) {
-      if (a.break || !(hits(a.name, q) || (a.alts || []).some((n) => hits(n, q)))) continue;
-      rows.push({ d, v, p, a });
-    }
-  });
-  if (!rows.length) { main.innerHTML = hint(`「${esc(state.q)}」の出演は、これから10日間の番組に見つかりませんでした。`); return; }
-  rows.sort((x, y) => x.d.localeCompare(y.d) || (x.a.at || x.p.start || '99').localeCompare(y.a.at || y.p.start || '99'));
-  const byDate = {};
-  for (const r of rows) (byDate[r.d] ||= []).push(r);
-  main.innerHTML = `<div class="find">${Object.entries(byDate).map(([d, list]) => {
-    const dow = new Date(d + 'T12:00:00Z').getUTCDay();
-    return `<h2 class="find__date" data-dow="${dow}"${isHoliday(d) ? ' data-hol="1"' : ''}>${dateLabel(d)}</h2>` + list.map(({ v, p, a }) => `<div class="find__row">
-      <span class="find__at">${esc(a.at || p.start || '')}${a.at ? '<small>頃</small>' : ''}</span>
-      <div><div class="find__who">${esc(a.name)}${a.role === '主任' ? '<span class="badge">主任</span>' : ''}${a.alts ? '<span class="badge badge--soft">交互</span>' : ''}</div>
-      <div class="find__where">${esc(v.name)}　${esc(p.part || '')} ${p.start ? `${esc(p.start)}〜${esc(p.end || '')}` : ''} <a href="${esc(p.url || v.url)}" target="_blank" rel="noopener noreferrer">番組</a></div></div></div>`).join('');
-  }).join('')}</div>`;
+  const hitAct = (a) => hits(a.name, q) || (a.alts || []).some((n) => hits(n, q));
+
+  // その日の出演者一覧（寄席ごと・公演ごとに名前を並べる）
+  const list = ids.map((id, i) => {
+    const v = venueOf(id);
+    const progs = (schedules[i]?.days?.[state.date] || []).filter((p) => !p.linkOnly && (p.acts || []).some((a) => !a.break));
+    const rows = progs.map((p) => {
+      const acts = (p.acts || []).filter((a) => !a.break && !a.tbd && (!q || hitAct(a)));
+      if (!acts.length) return '';
+      return `<div class="cast__row"><div class="cast__part">${esc(p.part || '公演')}${p.start ? `<span>${esc(p.start)}〜</span>` : ''}</div>
+        <div class="cast__names">${acts.map((a) => `<button type="button" class="cast__name${a.role === '主任' ? ' is-tori' : ''}${q && hitAct(a) ? ' is-hit' : ''}" data-name="${esc(a.alts ? a.alts[0] : a.name)}">${esc(a.name)}${a.at ? `<small>${esc(a.at)}</small>` : ''}</button>`).join('')}</div></div>`;
+    }).join('');
+    if (!rows) return q ? '' : `<section class="cast"><h2 class="cast__venue">${esc(v.name)}</h2><p class="theater__note">${progs.length ? '' : 'この日の出演者は公式サイトでご確認ください。'}</p></section>`;
+    return `<section class="cast"><h2 class="cast__venue">${esc(v.name)}</h2>${rows}</section>`;
+  }).join('');
+
+  // 名前で絞ったときは、その人のこれから10日間の出演も出す
+  let ahead = '';
+  if (q) {
+    const today = jstNow().iso;
+    const days = state.index.days.filter((d) => d >= today && d !== state.date);
+    const rows = [];
+    schedules.forEach((sc, i) => {
+      const v = venueOf(ids[i]);
+      for (const d of days) for (const p of sc?.days?.[d] || []) for (const a of p.acts || []) if (!a.break && hitAct(a)) rows.push({ d, v, p, a });
+    });
+    rows.sort((x, y) => x.d.localeCompare(y.d) || (x.a.at || '99').localeCompare(y.a.at || '99'));
+    if (rows.length) ahead = `<h2 class="find__head">ほかの日の出演</h2>` + rows.map(({ d, v, p, a }) => `<div class="find__row">
+      <span class="find__at">${dateLabel(d)}</span>
+      <div><div class="find__who">${esc(a.name)}${a.role === '主任' ? '<span class="badge">主任</span>' : ''}</div>
+      <div class="find__where">${esc(v.name)}　${esc(p.part || '')} ${esc(a.at || '')}頃</div></div></div>`).join('');
+  }
+  main.innerHTML = list || ahead
+    ? `<div class="find">${list || hint(`「${esc(state.q)}」はこの日の出演がありません。`)}${ahead}</div>`
+    : hint(q ? `「${esc(state.q)}」の出演は、選んだ寄席の番組に見つかりませんでした。` : 'この日の番組はまだ公開されていません。');
 }
 
 /* ---------- はしご：推しを何人か、同じ日に順番に観る ---------- */
@@ -321,6 +334,14 @@ function bind() {
     state.view = b.dataset.view;
     store.set(LS_VIEW, state.view);
     render();
+  });
+  $('#main').addEventListener('click', (e) => {
+    const b = e.target.closest('.cast__name');
+    if (!b) return;
+    $('#q').value = b.dataset.name;
+    state.q = b.dataset.name;
+    render();
+    window.scrollTo({ top: 0 });
   });
   let t;
   $('#q').addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { state.q = e.target.value; render(); }, 150); });

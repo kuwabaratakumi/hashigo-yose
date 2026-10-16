@@ -1,0 +1,61 @@
+name: 寄席の番組更新
+
+on:
+  schedule:
+    # 毎日 5:10 と 13:10（日本時間）に取得。UTCで指定
+    - cron: '10 20 * * *'
+    - cron: '10 4 * * *'
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT: hashigo-yose
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: 番組の取得
+        run: node scraper/run.mjs
+
+      - name: Cloudflare の設定確認
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::リポジトリの Secrets に CLOUDFLARE_API_TOKEN と CLOUDFLARE_ACCOUNT_ID を登録してください"
+            exit 1
+          fi
+
+      - name: Pages プロジェクトを用意（初回のみ作成）
+        run: npx --yes wrangler@3 pages project create "$PROJECT" --production-branch=main || echo "既にあるのでそのまま使います"
+
+      - name: Cloudflare Pages へ公開
+        run: npx --yes wrangler@3 pages deploy public --project-name="$PROJECT" --branch=main --commit-dirty=true
+
+      # 公開は済ませたうえで、取得できなかった寄席があれば失敗扱いにする。
+      # → GitHub から「ワークフローが失敗しました」のメールが届く。詳しい表は実行結果のページ（Summary）に出る
+      - name: 取得できなかった寄席の確認
+        run: |
+          node -e '
+            const r = require("./report.json");
+            if (!r.failed.length) { console.log("全軒取得できました"); process.exit(0); }
+            for (const f of r.failed) console.log(`::error title=取得できなかった寄席::${f.name}（${f.id}）${f.firstError ? " " + f.firstError : " 0件"}`);
+            console.log(`${r.total}軒中 ${r.failed.length}軒を取得できませんでした。画面には前回のデータを「更新できていません」付きで表示しています。`);
+            process.exit(1);
+          '

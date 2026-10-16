@@ -1,0 +1,17 @@
+{
+  "name": "hashigo-yose",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "しびれろ！はしご寄席 — 寄席の番組を10日間分まとめて見て、推しの芸人さんを追いかけるはしごを探す",
+  "scripts": {
+    "scrape": "node scraper/run.mjs",
+    "scrape:one": "node scraper/run.mjs --only",
+    "serve": "npx --yes http-server public -p 8080 -c-1"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "iconv-lite": "^0.6.3"
+  },
+  "engines": { "node": ">=20" }
+}

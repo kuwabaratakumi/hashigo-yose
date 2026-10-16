@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+# スケジュールは GitHub Actions が毎回取得するのでリポジトリには入れない
+public/data/
+
+# 取得結果の報告（Actions の通知用）
+report.json

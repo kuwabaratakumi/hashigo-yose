@@ -1,0 +1,9 @@
+[
+  {"id": "suzumoto", "adapter": "suzumoto", "name": "鈴本演芸場", "short": "鈴本", "pref": "東京", "area": "上野", "kind": "定席", "lat": 35.70975, "lng": 139.77322},
+  {"id": "suehirotei", "adapter": "suehirotei", "name": "新宿末廣亭", "short": "末廣亭", "pref": "東京", "area": "新宿三丁目", "kind": "定席", "lat": 35.69187, "lng": 139.70634},
+  {"id": "asakusa", "adapter": "asakusa", "name": "浅草演芸ホール", "short": "浅草", "pref": "東京", "area": "浅草", "kind": "定席", "lat": 35.71433, "lng": 139.79231},
+  {"id": "ikebukuro", "adapter": "ikebukuro", "name": "池袋演芸場", "short": "池袋", "pref": "東京", "area": "池袋", "kind": "定席", "lat": 35.73116, "lng": 139.71054},
+  {"id": "nigiwaiza", "adapter": "nigiwaiza", "name": "横浜にぎわい座", "short": "にぎわい座", "pref": "神奈川", "area": "桜木町", "kind": "ホール", "lat": 35.44969, "lng": 139.62958},
+  {"id": "hanjotei", "adapter": "hanjotei", "name": "天満天神繁昌亭", "short": "繁昌亭", "pref": "大阪", "area": "南森町", "kind": "定席", "lat": 34.69660, "lng": 135.51258},
+  {"id": "kirakukan", "adapter": "kirakukan", "name": "神戸新開地・喜楽館", "short": "喜楽館", "pref": "兵庫", "area": "新開地", "kind": "定席", "lat": 34.67973, "lng": 135.16649}
+]

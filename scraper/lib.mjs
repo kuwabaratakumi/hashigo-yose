@@ -157,8 +157,12 @@ export function parseLineup(text = '') {
       raw = raw.replace(paren[0], '');
       if (/開口一番/.test(paren[1])) role = '開口一番';
       else if (/席$/.test(paren[1])) note = paren[1];
-      else if (GENRE_HINT.test(paren[1]) && !/曲師|つとめ/.test(paren[1]) && paren[1].length <= 12) genre ||= paren[1].split(/[・:：、]/)[0];
-      else note = paren[1];
+      else {
+        // 「浪曲・曲師：藤初雪」→ 種類は浪曲、曲師はメモ。「曲師・沢村道世、トリをつとめます」は全部メモ
+        const [first, ...rest] = paren[1].split(/[・、]/);
+        if (GENRE_HINT.test(first) && !/曲師/.test(first) && first.length <= 10) { genre ||= first; if (rest.length) note = rest.join('・'); }
+        else note = paren[1];
+      }
     }
     const name = nameOf(raw.replace(/他\s*一席|ほか.*$/, ''));
     if (!name || name.length > 20) continue;

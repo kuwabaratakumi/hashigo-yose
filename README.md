@@ -28,7 +28,7 @@
 | 天満天神繁昌亭 (`hanjotei`) | 公演番組案内のページが使う一覧（`admin-ajax.php` の `child_search`、朝席・昼席・夜席・深夜） | 昼席は13:30〜16:10。夜席などは本文の「開演：午後6時30分」から |
 | 神戸新開地・喜楽館 (`kirakukan`) | 公演情報の一覧（今月・来月・再来月） | 昼席は開演時刻の記載がないため14:00開演として目安を出す |
 
-同じ寄席のサイトへは1ページずつ、間隔をあけてアクセスします。取得プログラムは `HashigoYoseBot/1.0 (+https://hashigo-yose.pages.dev/about.html; 連絡先)` を名乗ります（`public/site-info.js`）。
+同じ寄席のサイトへは1ページずつ、間隔をあけてアクセスします。取得プログラムは `HashigoYoseBot/1.0 (+https://hashigo-yose.com/about.html; 連絡先)` を名乗ります（`public/site-info.js`）。
 
 ## ローカルで動かす
 
@@ -49,7 +49,7 @@ GitHub Actions が毎日 5:10 / 13:10（日本時間）に番組を取得し、`
 2. GitHub のリポジトリ Settings → Secrets and variables → Actions に登録
    - `CLOUDFLARE_API_TOKEN`
    - `CLOUDFLARE_ACCOUNT_ID`
-3. Actions タブで「寄席の番組更新」を手動実行 → `https://hashigo-yose.pages.dev` で表示
+3. Actions タブで「寄席の番組更新」を手動実行 → `https://hashigo-yose.pages.dev` で表示（独自ドメインは `https://hashigo-yose.com`。`hashigoyose.com` はこちらへ転送）
 
 自分・社内だけで見る場合は、Cloudflare の Zero Trust → Access でこのURLに「許可するメールアドレス」を設定します。
 

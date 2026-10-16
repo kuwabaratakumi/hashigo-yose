@@ -84,7 +84,7 @@ async function render() {
   document.querySelectorAll('.view button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
   $('#hashigo').hidden = state.view !== 'hashigo';
   $('.search').hidden = state.view === 'hashigo';
-  $('#q').placeholder = '芸人さんの名前で絞り込む（例: 喬太郎）';
+  $('#q').placeholder = '出演者の名前で絞り込む（例: 喬太郎）';
   if (state.view === 'hashigo') return renderHashigo();
   if (state.view === 'geinin') return renderGeinin();
   return renderBangumi();
@@ -221,7 +221,7 @@ async function renderHashigo() {
   fillNames(schedules, [state.date]);
   const words = [...f.querySelectorAll('input[name=n]')].map((i) => i.value.trim()).filter(Boolean);
   if (words.length < 2) {
-    main.innerHTML = hint('芸人さんを2人以上入れると、その日に順番に観られる寄席と時刻の組み合わせを出します。同じ番組に出ていればそのまま、別の寄席なら移動時間の目安を見込みます。');
+    main.innerHTML = hint('出演者を2人以上入れると、その日に順番に観られる寄席と時刻の組み合わせを出します。同じ番組に出ていればそのまま、別の寄席なら移動時間の目安を見込みます。');
     return;
   }
   const now = jstNow();

@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>しびれろ！はしご寄席</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="description" content="東京・横浜・大阪・神戸の寄席の番組を10日間分まとめて見て、推しの芸人さんを追いかけるはしごの組み合わせを探す">
+<meta name="description" content="東京・横浜・大阪・神戸の寄席の番組を10日間分まとめて見て、推しの出演者を追いかけるはしごの組み合わせを探す">
 <meta name="theme-color" content="#1f1a17">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
 <body>
 <header class="top">
   <div class="top__inner">
-    <h1 class="brand"><svg class="brand__icon" viewBox="0 0 100 100" aria-hidden="true"><defs><mask id="brandMask"><rect width="100" height="100" fill="#fff"/><g fill="#000"><rect x="11.7" y="0" width="10" height="100"/><rect x="78.3" y="0" width="10" height="100"/><rect x="21.7" y="23.75" width="56.6" height="10"/><rect x="21.7" y="66.25" width="56.6" height="10"/></g></mask></defs><circle cx="50" cy="50" r="50" fill="currentColor" mask="url(#brandMask)"/></svg>しびれろ！はしご寄席</h1>
+    <h1 class="brand"><svg class="brand__icon" viewBox="0 0 100 100" aria-hidden="true"><defs><mask id="brandMask"><rect width="100" height="100" fill="#fff"/><g stroke="#000" stroke-width="6" stroke-linecap="round"><path d="M50 50V36M50 50L62 57M50 50L38 57"/></g><circle cx="50" cy="50" r="5" fill="#000"/></mask></defs><g fill="currentColor"><path d="M18 21Q50 13 82 21Q90 50 82 79Q50 87 18 79Q10 50 18 21Z" stroke="currentColor" stroke-width="7" stroke-linejoin="round" mask="url(#brandMask)"/><path d="M16 19L10 13M84 19L90 13M16 81L10 87M84 81L90 87" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="8" cy="11" r="5.5"/><circle cx="92" cy="11" r="5.5"/><circle cx="8" cy="89" r="5.5"/><circle cx="92" cy="89" r="5.5"/></g></svg>しびれろ！はしご寄席</h1>
     <button class="pick-btn" id="openPicker" type="button">寄席を選ぶ <span id="pickCount" class="pick-btn__n">0</span></button>
   </div>
   <nav class="days" id="days" aria-label="日付"></nav>
@@ -28,8 +28,8 @@
       <button type="button" data-view="geinin">出演者から</button>
     </div>
     <label class="search">
-      <span class="visually-hidden">芸人さんの名前で絞り込む</span>
-      <input id="q" type="search" placeholder="芸人さんの名前で絞り込む（例: 喬太郎）" autocomplete="off" list="nameList">
+      <span class="visually-hidden">出演者の名前で絞り込む</span>
+      <input id="q" type="search" placeholder="出演者の名前で絞り込む（例: 喬太郎）" autocomplete="off" list="nameList">
     </label>
   </div>
 </header>
@@ -37,10 +37,10 @@
 <section id="hashigo" class="hashigo" hidden>
   <form class="hashigo__form" id="hashigoForm" autocomplete="off">
     <fieldset class="hashigo__titles">
-      <legend>この日に観たい芸人さんを2人以上入れてください</legend>
+      <legend>この日に観たい出演者を2人以上入れてください</legend>
       <div class="hashigo__picks" id="picks">
-        <input type="search" name="n" list="nameList" placeholder="芸人さんの名前（例: 一之輔）" aria-label="1人目">
-        <input type="search" name="n" list="nameList" placeholder="芸人さんの名前" aria-label="2人目">
+        <input type="search" name="n" list="nameList" placeholder="出演者の名前（例: 一之輔）" aria-label="1人目">
+        <input type="search" name="n" list="nameList" placeholder="出演者の名前" aria-label="2人目">
         <input type="search" name="n" list="nameList" placeholder="3人目（任意）" aria-label="3人目">
         <input type="search" name="n" list="nameList" placeholder="4人目（任意）" aria-label="4人目">
       </div>

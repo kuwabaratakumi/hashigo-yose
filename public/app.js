@@ -243,7 +243,7 @@ async function renderHashigo() {
   });
   const missing = words.filter((_, i) => !cands[i].length);
   if (missing.length) {
-    main.innerHTML = hint(`「${missing.map(esc).join('」「')}」は、この日${scopeAll ? 'どの寄席にも' : '選んだ寄席には'}${isToday ? 'これから' : ''}出演がありません。` + (scopeAll ? '出演者からで、ほかの日の出演を探せます。' : '探す範囲を「すべての寄席」にすると見つかるかもしれません。'));
+    main.innerHTML = hint(`「${missing.map(esc).join('」「')}」は、この日${scopeAll ? 'どの寄席にも' : '選んだ寄席には'}${isToday ? 'これから' : ''}出演がありません。` + (scopeAll ? '「出演者から」で、ほかの日の出演を探せます。' : '探す範囲を「すべての寄席」にすると見つかるかもしれません。'));
     return;
   }
   // 順番を入れ替えながら、間に合う高座だけをつなぐ

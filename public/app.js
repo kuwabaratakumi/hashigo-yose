@@ -1,5 +1,5 @@
 import { isHoliday } from './holidays.js';
-// しびれろ！はしご寄席 — 選んだ寄席の10日間の番組、芸人さがし、推しを追いかけるはしご
+// しびれろ！はしご寄席 — 選んだ寄席の10日間の番組、出演者から、推しを追いかけるはしご
 const LS_KEY = 'hashigo-yose:venues';
 const LS_VIEW = 'hashigo-yose:view';
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
@@ -148,7 +148,7 @@ function fillNames(schedules, dates) {
   if ($('#nameList').dataset.html !== html) { $('#nameList').innerHTML = html; $('#nameList').dataset.html = html; }
 }
 
-/* ---------- 芸人さがし：選んだ日の、選んだ寄席の出演者一覧 ---------- */
+/* ---------- 出演者から：選んだ日の、選んだ寄席の出演者一覧 ---------- */
 async function renderGeinin() {
   const main = $('#main');
   if (!state.selected.length) { renderSeq++; main.replaceChildren($('#tplEmpty').content.cloneNode(true)); return; }
@@ -243,7 +243,7 @@ async function renderHashigo() {
   });
   const missing = words.filter((_, i) => !cands[i].length);
   if (missing.length) {
-    main.innerHTML = hint(`「${missing.map(esc).join('」「')}」は、この日${scopeAll ? 'どの寄席にも' : '選んだ寄席には'}${isToday ? 'これから' : ''}出演がありません。` + (scopeAll ? '芸人さがしで、ほかの日の出演を探せます。' : '探す範囲を「すべての寄席」にすると見つかるかもしれません。'));
+    main.innerHTML = hint(`「${missing.map(esc).join('」「')}」は、この日${scopeAll ? 'どの寄席にも' : '選んだ寄席には'}${isToday ? 'これから' : ''}出演がありません。` + (scopeAll ? '出演者からで、ほかの日の出演を探せます。' : '探す範囲を「すべての寄席」にすると見つかるかもしれません。'));
     return;
   }
   // 順番を入れ替えながら、間に合う高座だけをつなぐ

@@ -5,15 +5,15 @@
   --ink-2: #333333;
   --line: #333333;
   --soft-line: #d0d0d0;
-  --head: #1f1a17;
+  --head: #4a2c63; /* 江戸紫 */
   --velvet: #c8402b;
   --velvet-ink: #ffffff;
   --mint: #e6edd2;
   --mint-ink: #3c5216;
   --past: #a8a8a8;
   --sat: #2f62c9;
-  --num: "Barlow Condensed", "Zen Kaku Gothic New", sans-serif;
-  --jp: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --num: "Barlow Condensed", "Zen Old Mincho", sans-serif;
+  --jp: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
   color-scheme: light;
 }
 
@@ -348,3 +348,11 @@ select { -webkit-appearance: none; appearance: none; background-image: var(--che
 .cast__name.is-hit { background: #fff4c7; }
 .find__head { font-size: 15px; margin: 24px 0 4px; padding-bottom: 4px; border-bottom: 2px solid var(--ink); }
 .find .find__at { font-size: 15px; }
+
+/* 和の見た目：江戸紫のヘッダー、明朝体 */
+.brand { font-weight: 900; letter-spacing: .08em; }
+.top .day[data-dow="6"] .day__d, .top .day[data-dow="6"] .day__w { color: #b9c8ff; }
+.top .day[data-dow="0"] .day__d, .top .day[data-dow="0"] .day__w,
+.top .day[data-hol] .day__d, .top .day[data-hol] .day__w { color: #ff9aa2; }
+.top .view button[aria-pressed="true"] { background: #2e1a40; }
+.view button, .pick-btn { font-weight: 700; }

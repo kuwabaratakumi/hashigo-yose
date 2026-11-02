@@ -59,15 +59,19 @@ function resolve(slots, day) {
 export async function fetchRange(venue, days) {
   const top = await get(BASE);
   if (!top) throw new Error('トップページを取得できませんでした');
-  // 席ページ「10naka.html」と、その月を集める
-  const files = [...new Set([...top.matchAll(/href="(\d{1,2})(kami|naka|shimo)\.html"/g)].map((m) => `${m[1]}${m[2]}`))];
+  // 席ページへのリンク。「10naka.html」（〜2026年10月）と「11kami/index.html」（2026年11月〜）の両方の形に対応
+  const files = new Map();
+  for (const m of top.matchAll(/href="(?:\.\/)?((\d{1,2})(kami|naka|shimo)(?:\.html|\/(?:index\.html)?))"/g)) {
+    const key = `${m[2]}${m[3]}`;
+    if (!files.has(key)) files.set(key, m[1]);
+  }
   const want = new Set(days.map((d) => d.iso));
   const out = Object.fromEntries(days.map((d) => [d.iso, []]));
-  for (const f of files) {
+  for (const [f, href] of files) {
     const [, mo, seki] = f.match(/^(\d{1,2})(kami|naka|shimo)$/);
     const isos = sekiRange(Number(mo), seki);
     if (!isos.some((i) => want.has(i))) continue;
-    const html = await get(`${BASE}${f}.html`);
+    const html = await get(`${BASE}${href}`);
     await sleep(800);
     if (!html) continue;
     const { note, parts } = parseSeki(html);
@@ -77,7 +81,7 @@ export async function fetchRange(venue, days) {
       for (const p of parts) {
         const acts = resolve(p.slots, day);
         if (!acts.length) continue;
-        out[iso].push({ part: p.label, title: `${Number(mo)}月${SEKI[seki]}`, start: p.start, end: p.end, url: `${BASE}${f}.html`, note: /入替なし/.test(note) ? '昼夜入替なし' : '', acts });
+        out[iso].push({ part: p.label, title: `${Number(mo)}月${SEKI[seki]}`, start: p.start, end: p.end, url: `${BASE}${href}`, note: /入替なし/.test(note) ? '昼夜入替なし' : '', acts });
       }
     }
   }

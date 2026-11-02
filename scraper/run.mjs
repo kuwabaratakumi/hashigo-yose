@@ -109,7 +109,12 @@ async function main() {
   // 寄席ごとにサイトが違うので並行して取る（同じサイトの中は順番に、間隔をあけて）
   const summary = await Promise.all(targets.map(async (v) => {
     const started = Date.now();
-    const fresh = await scrapeVenue(v, days);
+    let fresh = await scrapeVenue(v, days);
+    // 通信エラー（fetch failed など）は一時的なことが多いので、少し待ってもう一度だけ取りに行く
+    if (countPrograms(fresh.days) === 0 && fresh.errors.length) {
+      await new Promise((r) => setTimeout(r, 20000));
+      fresh = await scrapeVenue(v, days);
+    }
     const n = countPrograms(fresh.days);
     let data = { ...fresh, stale: false, lastOkAt: fresh.updatedAt };
     if (n === 0) {
